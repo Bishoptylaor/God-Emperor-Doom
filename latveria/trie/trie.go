@@ -1,4 +1,4 @@
-package triedoll
+package trie
 
 /*
  *  ┏┓      ┏┓
@@ -18,7 +18,7 @@ package triedoll
  *      ┗┻┛　 ┗┻┛
  @Time    : 2024/7/29 -- 14:34
  @Author  : bishop ❤️ MONEY
- @Description: trie 树基础实现
+ @Description: trie 树||前缀树基础实现
 */
 
 type Trie struct {
@@ -26,9 +26,9 @@ type Trie struct {
 }
 
 type trieNode struct {
-	children map[rune]*trieNode
-	passCnt  int
-	end      bool
+	children map[rune]*trieNode // children
+	passCnt  int                // counts of how many word has same node
+	end      bool               // if current node is the end of a word
 }
 
 func NewTrie() *Trie {
@@ -60,11 +60,11 @@ func (t *Trie) Insert(word string) {
 
 func (t *Trie) Search(word string) bool {
 	node := t.searchWord(word)
-	// 没找到
+	// no found
 	if node == nil {
 		return false
 	}
-	// 确实存在单词以该节点作为结尾
+	// there is a _word end at this node while word = _word
 	if node.end {
 		return true
 	}
