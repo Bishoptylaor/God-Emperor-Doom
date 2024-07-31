@@ -27,13 +27,15 @@ type Trie struct {
 
 type trieNode struct {
 	children map[rune]*trieNode // children
-	passCnt  int                // counts of how many word has same node
+	passCnt  int                // counts of how many word has same node; including itself
 	end      bool               // if current node is the end of a word
 }
 
 func NewTrie() *Trie {
 	return &Trie{
-		root: &trieNode{},
+		root: &trieNode{
+			children: make(map[rune]*trieNode),
+		},
 	}
 }
 
@@ -46,13 +48,12 @@ func (t *Trie) Insert(word string) {
 	for _, ch := range word {
 		if _, ok := ptr.children[ch]; !ok {
 			// init
-			ptr.children[ch] = &trieNode{}
-		} else {
-			// cnt ++
-			ptr.children[ch].passCnt++
-			// go to next ch
-			ptr = ptr.children[ch]
+			ptr.children[ch] = &trieNode{children: make(map[rune]*trieNode)}
 		}
+		// cnt ++
+		ptr.children[ch].passCnt++
+		// go to next ch
+		ptr = ptr.children[ch]
 	}
 
 	ptr.end = true
