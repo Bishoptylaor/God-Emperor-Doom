@@ -3,9 +3,24 @@ package taxcalculator
 import "fmt"
 
 /*
-CalOneMonth
-original 税前
-year, month 待查询年月
+ *  ┏┓      ┏┓
+ *┏━┛┻━━━━━━┛┻┓
+ *┃　　　━　　  ┃
+ *┃   ┳┛ ┗┳   ┃
+ *┃           ┃
+ *┃     ┻     ┃
+ *┗━━━┓     ┏━┛
+ *　　 ┃　　　┃神兽保佑
+ *　　 ┃　　　┃代码无BUG！
+ *　　 ┃　　　┗━━━┓
+ *　　 ┃         ┣┓
+ *　　 ┃         ┏┛
+ *　　 ┗━┓┓┏━━┳┓┏┛
+ *　　   ┃┫┫  ┃┫┫
+ *      ┗┻┛　 ┗┻┛
+ @Time    : 2024/7/29 -- 14:34
+ @Author  : bishop ❤️ MONEY
+ @Description: 工资个税计算器
 */
 
 type TaxCalculator struct {

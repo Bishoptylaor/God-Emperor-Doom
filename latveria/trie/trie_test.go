@@ -2,8 +2,51 @@ package trie
 
 import (
 	"fmt"
+	"github.com/Bishoptylaor/go-toolkit/zrand"
+	"sync"
 	"testing"
 )
+
+func TestSafeTrie(t *testing.T) {
+	st := NewSafeTrie[int]()
+	wg1, wg2 := sync.WaitGroup{}, sync.WaitGroup{}
+	ch1, ch2 := make(chan struct{}), make(chan struct{})
+	go func() {
+		select {
+		case <-ch1:
+			for i := 0; i < 100; i++ {
+				wg1.Add(1)
+				go func() {
+					defer wg1.Done()
+					word := zrand.RandString(10)
+					st.Insert(word, 0)
+					fmt.Println(word)
+				}()
+			}
+		}
+	}()
+
+	go func() {
+		select {
+		case <-ch2:
+			for i := 0; i < 100; i++ {
+				wg2.Add(1)
+				go func() {
+					defer wg2.Done()
+					word := zrand.RandString(8)
+					res := st.Search(word)
+					fmt.Println(word, res)
+				}()
+			}
+		}
+	}()
+
+	ch1 <- struct{}{}
+	ch2 <- struct{}{}
+	wg1.Wait()
+	wg2.Wait()
+	fmt.Println("end")
+}
 
 func TestRadix(t *testing.T) {
 	radix := NewRadix()
@@ -18,6 +61,30 @@ func TestRadix(t *testing.T) {
 	fmt.Println("--------------------")
 	radix.Insert("hello foo")
 	pr(radix.root, 1)
+}
+
+func TestPath(t *testing.T) {
+	path := NewPathTrie()
+	path.Insert("/a/b/c")
+	pp(path.root, 1)
+	fmt.Println("--------------------")
+	path.Insert("/a/d/e")
+	pp(path.root, 1)
+	fmt.Println("--------------------")
+	path.Insert("/x/y")
+	pp(path.root, 1)
+	fmt.Println("--------------------")
+	path.Insert("/z")
+	pp(path.root, 1)
+	fmt.Println("--------------------")
+	path.Erase("/z")
+	pp(path.root, 1)
+	fmt.Println("--------------------")
+	path.Erase("/a/b")
+	pp(path.root, 1)
+	fmt.Println("--------------------")
+	path.Erase("/a/b/c")
+	pp(path.root, 1)
 }
 
 func TestTrie(t *testing.T) {
@@ -127,5 +194,18 @@ func pt(node *trieNode, level int) {
 	}
 	for _, child := range node.children {
 		pt(child, level+1)
+	}
+}
+
+func pp(node *pathTrieNode, level int) {
+	if node == nil {
+		return
+	}
+	fmt.Println("current", node.part, "level", level, "passcnt:", node.passCnt, "end:", node.end)
+	for c, _ := range node.children {
+		fmt.Println("c:", string(c))
+	}
+	for _, child := range node.children {
+		pp(child, level+1)
 	}
 }
